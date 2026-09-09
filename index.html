@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MobiToEpub: Free In-Browser MOBI to EPUB Converter for Kindle</title>
+  <meta name="description" content="Convert Amazon Kindle MOBI files to EPUB format 100% privately in your browser. No server uploads, zero file persistence, pure client-side PalmDOC decompression.">
+  <link rel="canonical" href="https://momahdideveloper.github.io/mobi-to-epub/">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151e33;
+      --card-border: #233256;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #10b981;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 0 16px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 0 80px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 0.03em;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 32px;
+    }
+    .cta-group {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: #0284c7;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--primary);
+      border: 1px solid var(--card-border);
+    }
+    .btn-secondary:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      color: #e2e8f0;
+    }
+    p {
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    ul {
+      list-style-position: inside;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    .spec-table th, .spec-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.95rem;
+    }
+    .spec-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .status-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .tag-green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-red { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">100% PRIVATE CLIENT-SIDE UTILITY</div>
+      <h1>Fast In-Browser MOBI to EPUB Converter</h1>
+      <p class="subtitle">Amazon officially deprecated MOBI for Send-to-Kindle in favor of EPUB. Convert your legacy eBook collection privately in your browser without uploading your files to remote servers.</p>
+      
+      <div class="cta-group">
+        <a href="https://mobitoepub.com/mobi-to-epub/" class="btn btn-primary">Launch Free Converter Tool &rarr;</a>
+        <a href="https://mobitoepub.com/" class="btn btn-secondary">Visit Official MobiToEpub Website</a>
+      </div>
+    </header>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="feature-icon">🛡️</div>
+        <h2>Zero-Upload Privacy</h2>
+        <p>Traditional online converters upload your books and personal documents to unknown cloud servers. <strong>MobiToEpub</strong> runs PalmDOC decompression entirely inside your browser's RAM via WebAssembly and JavaScript buffer manipulation.</p>
+      </div>
+
+      <div class="card">
+        <div class="feature-icon">⚡</div>
+        <h2>Instant Local Conversion</h2>
+        <p>Because no network round-trips or file uploads occur, conversion takes only milliseconds. Large books convert instantly, preserving chapters, metadata, covers, and typography.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>MOBI vs EPUB: Why the Transition Happened</h2>
+      <p>In late 2022, Amazon notified Kindle users that the legacy proprietary MOBI (.mobi, .prc) format would no longer be supported by modern Kindle apps and the Send-to-Kindle system. EPUB is now the universal global standard for reflowable digital text.</p>
+      
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>MOBI (Legacy)</th>
+            <th>EPUB3 (Modern Standard)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Amazon Send-to-Kindle Support</td>
+            <td><span class="status-tag tag-red">Deprecated</span></td>
+            <td><span class="status-tag tag-green">Fully Supported</span></td>
+          </tr>
+          <tr>
+            <td>Modern CSS3 & Typography</td>
+            <td><span class="status-tag tag-red">Limited / Broken</span></td>
+            <td><span class="status-tag tag-green">Full Support</span></td>
+          </tr>
+          <tr>
+            <td>Font Scaling & Dynamic Hyphenation</td>
+            <td><span class="status-tag tag-red">Poor</span></td>
+            <td><span class="status-tag tag-green">Enhanced (Bookerly)</span></td>
+          </tr>
+          <tr>
+            <td>Cross-Platform Compatibility</td>
+            <td>Kindle only</td>
+            <td>Apple Books, Kobo, Android, Kindle</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>How the Client-Side Engine Operates</h2>
+      <ul>
+        <li><strong>Binary Record Slicing:</strong> Reads the Palm Database format (PDB) header and parses the 78-byte MobiHeader.</li>
+        <li><strong>PalmDOC Decompression:</strong> Unpacks compressed LZ77 chunks directly in memory without heap fragmentation.</li>
+        <li><strong>HTML/CSS Normalization:</strong> Replaces obsolete Kindle 3 tags with valid HTML5 and responsive stylesheet standards.</li>
+        <li><strong>EPUB3 Archiving:</strong> Assembles the Open Container Format (OCF), package document (.opf), and navigational document (.xhtml) into an uncompressed mimetype and Deflated ZIP.</li>
+      </ul>
+      <p>Try it out now for free: <a href="https://mobitoepub.com/mobi-to-epub/" style="color: var(--primary); font-weight: 600;">Open the MobiToEpub Converter</a> or visit the homepage at <a href="https://mobitoepub.com/" style="color: var(--primary); font-weight: 600;">mobitoepub.com</a>.</p>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 <a href="https://mobitoepub.com/">MobiToEpub</a>. Open source project by <a href="https://github.com/MoMahdideveloper">MoMahdideveloper</a>. Dedicated to client-side privacy and open digital book standards.</p>
+    </footer>
+  </div>
+</body>
+</html>
